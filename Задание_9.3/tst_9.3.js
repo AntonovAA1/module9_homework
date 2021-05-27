@@ -15,61 +15,73 @@ https://picsum.photos/v2/list?limit=5.
 Подсказка: получение данных из input.
 const value = document.querySelector('input').value;)*/
 
-let button = document.querySelector('.button') /* Поиск элемента с классом  "button" */
-button.addEventListener('click', getInput) /* Обработчик события "click", запускает функцию getInput после совершения события */
 
-function getInput () {
-   const valueInput = document.querySelector('input').value; /** поиск и получение данных из input. */
-   let numberInput = Number(valueInput)
-
-if (numberInput < 1 || numberInput > 10 || numberInput != number) {
-    console.log(numberInput + ' - число вне диапазона от 1 до 10');
-    /* document.querySelector(".error").innerHTML = "<span>Число вне диапазона от 1 до 10 !!!</span>"; /** Поиск элемента с классом "error" и вставка нового Элемента */ 
-    document.querySelector(".error").insertAdjacentHTML('beforebegin', "<span>Число вне диапазона от 1 до 10 !!!</span>"); /** Поиск элемента с классом "error" и вставка нового Элемента перед элементом с классом "error"*/ 
-  } else { 
-         // Создаем экзепляр класса XMLHttpRequest
-      let xhr = new XMLHttpRequest();
-         // Инициализируем запрос
-      xhr.open('GET', `https://picsum.photos/v2/list/?limit=${numberInput}`, true);
-         // Добавляем обрабочик ответа сервера
-       xhr.onload = function()  {
-       if (xhr.status != 200) { // HTTP ошибка?
+/**
+  * Функция-обертка над XMLHttpRequest, осуществляющая запрос
+  * url - урл, по которому будет осуществляться запрос
+  * callback - функция, которая вызовется при успешном выполнении
+  * и первым параметром получит объект-результат запроса
+  */
+function useRequest(url, callback) {
+	var xhr = new XMLHttpRequest(); // Создаем экзепляр класса XMLHttpRequest
+	let limit = document.querySelector('input').value; /** поиск и получение данных из input. */
+	 // Инициализируем запрос
+   xhr.open('GET', url, true);
+	if (limit < 1 || limit > 10 || limit == NaN) {
+		alert(`${limit} - число вне диапазона от 1 до 10`);
+     document.querySelector(".error").insertAdjacentHTML('beforebegin', "<span>Число вне диапазона от 1 до 10 !!!</span>"); /** Поиск элемента с классом "error" и вставка нового Элемента перед элементом с классом "error"*/ 
+	} 
+     // Добавляем обрабочик ответа сервера
+	xhr.onload = function () {
+		if (xhr.status != 200) {
          // Если статус не 200 (200 - указывает, что запрос выполнен успешно),
-         // то обрабатываем отдельно
-       console.log('Статус ответа: ', xhr.status);
-         } else {
-          // Ответ мы получаем в формате JSON, поэтому его надо распарсить
+			console.log('Статус ответа: ', xhr.status);
+		} else {
           // Парсим ответ сервера
-         let apiData = JSON.parse(xhr.response);
-         // Ищем ноду для вставки результата запроса
-         const resultNode = document.querySelector('.result');
+			const result = JSON.parse(xhr.response);
+			if (callback) {
+				callback(result);
+			}
+		}
+	};
 
-         /* Функция обработки полученного результата
-         apiData - объект с результатом запроса */
-         function displayResult(apiData) {
-            let cards = '';
-            apiData.forEach(item => {
-                const cardBlock = `
-                  <div class="card">
-                  <img
-                  src="${item.download_url}"
-                  class="card-image"
-                  />
-                  <p>${item.author}</p>
-                  </div>
-                  `;
-               cards = cards + cardBlock;
-               });
-            resultNode.innerHTML = cards;
-            }
-         }     
-      }
- 
-      // Добавляем обрабочик ошибки
-      xhr.onerror = function() {
-      // обработаем ошибку, не связанную с HTTP (например, нет соединения)
-      console.log('Ошибка! Статус ответа: ', xhr.status);
-      }
-      xhr.send();
-   }
-} 
+	xhr.onerror = function () {
+		console.log('Ошибка! Статус ответа: ', xhr.status);
+	};
+	xhr.send();  // Отправляем запрос
+};
+
+// Ищем ноду для вставки результата запроса
+const resultNode = document.querySelector('.result');
+// Ищем кнопку, по нажатии на которую будет запрос
+const btnNode = document.querySelector('.button');
+
+  /* Функция обработки полученного результата
+         result - объект с результатом запроса */
+function displayResult(result) {
+	let cards = '';
+	result.forEach(item => {
+		const cardBlock = `
+		<div class="card">
+		  <img
+			src="${item.download_url}"
+			class="card-image"
+		  />
+		  <p>${item.author}</p>
+		</div>
+	  `;
+		cards = cards + cardBlock;
+	});
+	resultNode.innerHTML = cards;
+}
+// Вешаем обработчик на кнопку для запроса
+btnNode.addEventListener('click', () => {
+	let limit = document.querySelector('input').value;
+	useRequest(`https://picsum.photos/v2/list/?limit=${limit}`, displayResult);
+})
+
+
+
+
+
+
