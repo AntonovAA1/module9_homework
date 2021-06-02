@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div class="form">
+        <h2>Запрос картинок</h1>
+        <br>
+        <div>Номер страницы:</div>
+        <input class = "input_1" type="number" placeholder="Введите число от 1 до 10" required>
+        <br>
+        <div>Лимит:</div>
+        <input class = "input_2" type="number" placeholder="Введите число от 1 до 10" required>
+        <br>
+        <div class = "error"></div>
+        <br>
+        <button class="button">ЗАПРОС</button>
+        <br>
+        <button class="button buttonClear">Очищаем ЗАПРОС (localStorage)</button>
+        <br>
+        <div class="info">БЕЗ ОЧИСТКИ ЗАПРОСА, при обновлении страницы/запроса, покажутся картинки из последнего успешно выполненного запроса</div>
+        <br>
+        <div class="result">Здесь будет результат</div>
+    </div>
+    <script src="tst_9.5.js"></script>
+</body>
+</html>
